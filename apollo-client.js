@@ -15,13 +15,13 @@ const client = new ApolloClient({
         fields: {
           balance: {
             read(_, { variables, storage }) {
-              console.log("read");
+              // console.log("read");
               if (!storage.var) {
-                console.log("storage.var about to be created");
+                // console.log("storage.var about to be created");
                 storage.var = makeVar(5555);
               }
               if (variables.account) {
-                console.log(variables.account);
+                // console.log(variables.account);
                 // 1. Load the page
                 // 2. Trigger the initial useQuery
                 // 3. The balance is 0 because the account is not connected yet
@@ -32,10 +32,10 @@ const client = new ApolloClient({
                 provider.getBalance(variables.account).then((balance) => {
                   const balanceInEth = ethers.utils.formatEther(balance);
                   storage.var(balanceInEth);
-                  console.log(balanceInEth);
+                  // console.log(balanceInEth);
                 });
               }
-              console.log(storage);
+              // console.log(storage);
               return storage.var();
             },
           },

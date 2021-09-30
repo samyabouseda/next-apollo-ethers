@@ -25,14 +25,15 @@ export const Wallet = () => {
   const { chainId, account, activate, active } = useWeb3React();
   const [getBalance, { data, loading, error }] = useLazyQuery(QUERY);
 
-  // useEffect(() => {
-  //   console.log(`the account ${account} is connected`);
-  //   getBalance();
-  // }, [account, getBalance]);
-
-  // useEffect(() => {
-  //   getBalance();
-  // });
+  useEffect(() => {
+    if (active) {
+      getBalance({
+        variables: {
+          account,
+        },
+      });
+    }
+  }, [active, account, getBalance]);
 
   const onClick = () => {
     activate(injectedConnector);
@@ -47,7 +48,8 @@ export const Wallet = () => {
     return <div>error</div>;
   }
 
-  console.log(data);
+  console.log(`account: ${account}`);
+  console.log(`activate: ${active}`);
 
   return (
     <div>
@@ -61,18 +63,6 @@ export const Wallet = () => {
           Connect
         </button>
       )}
-      <button
-        type="button"
-        onClick={() =>
-          getBalance({
-            variables: {
-              account,
-            },
-          })
-        }
-      >
-        Load Balance
-      </button>
     </div>
   );
 };
