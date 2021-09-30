@@ -3,7 +3,7 @@ import { useWeb3React } from "@web3-react/core";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import useSWR from "swr";
 import { formatEther } from "@ethersproject/units";
-import { useQuery, gql } from "@apollo/client";
+import { useQuery, gql, useLazyQuery } from "@apollo/client";
 
 export const injectedConnector = new InjectedConnector({
   supportedChainIds: [
@@ -15,50 +15,28 @@ export const injectedConnector = new InjectedConnector({
   ],
 });
 
-// const fetcher =
-//   (library) =>
-//   (...args) => {
-//     const [method, ...params] = args;
-//     console.log(method);
-//     console.log(params);
-//     return library[method](...params);
-//   };
-
 const QUERY = gql`
   query Balance {
     balance @client
   }
 `;
 
-export const Balance = () => {
-  const { account } = useWeb3React();
-  const { data, loading, error } = useQuery(QUERY, {
-    variables: {
-      account,
-    },
-  });
-
-  // const { data: balance, mutate } = useSWR(["getBalance", account, "latest"], {
-  //   fetcher: (...args) => {
-  //     const [method, ...params] = args;
-  //     console.log(method);
-  //     console.log(params);
-  //     return library[method](...params);
-  //   },
-  // });
+export const Wallet = () => {
+  const { chainId, account, activate, active } = useWeb3React();
+  const [getBalance, { data, loading, error }] = useLazyQuery(QUERY);
 
   // useEffect(() => {
-  //   console.log(`listening for blocks...`);
-  //   library.on("block", () => {
-  //     console.log("update balance...");
-  //     mutate(undefined, true);
-  //   });
-  //   // remove listener when the component is unmounted
-  //   return () => {
-  //     library.removeAllListeners("block");
-  //   };
-  //   // trigger the effect only on component mount
-  // }, []);
+  //   console.log(`the account ${account} is connected`);
+  //   getBalance();
+  // }, [account, getBalance]);
+
+  // useEffect(() => {
+  //   getBalance();
+  // });
+
+  const onClick = () => {
+    activate(injectedConnector);
+  };
 
   if (loading) {
     return <p>loading...</p>;
@@ -69,28 +47,13 @@ export const Balance = () => {
     return <div>error</div>;
   }
 
-  const balance = data ? data.balance : 0;
-  console.log(balance);
-  return <div>Balance: {parseFloat(formatEther(balance)).toPrecision(4)}</div>;
-};
-
-export const Wallet = () => {
-  const { chainId, account, activate, active, library } = useWeb3React();
-
-  const onClick = () => {
-    activate(injectedConnector);
-  };
-
-  const showProvider = async () => {
-    // const balance = await library.eth.getBalance(account);
-    console.log(library);
-  };
+  console.log(data);
 
   return (
     <div>
       <div>ChainId: {chainId}</div>
       <div>Account: {account}</div>
-      <Balance />
+      <div>Balance: {data ? data.balance : 0}</div>
       {active ? (
         <div>✅ </div>
       ) : (
@@ -98,8 +61,17 @@ export const Wallet = () => {
           Connect
         </button>
       )}
-      <button type="button" onClick={showProvider}>
-        Show Provider
+      <button
+        type="button"
+        onClick={() =>
+          getBalance({
+            variables: {
+              account,
+            },
+          })
+        }
+      >
+        Load Balance
       </button>
     </div>
   );

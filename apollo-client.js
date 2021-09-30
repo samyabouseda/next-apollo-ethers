@@ -3,6 +3,9 @@ import { makeVar } from "@apollo/client";
 import { ethers } from "ethers";
 
 const provider = ethers.getDefaultProvider("mainnet");
+// const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+const connectedAccount = makeVar();
 
 const client = new ApolloClient({
   uri: "https://countries.trevorblades.com",
@@ -12,17 +15,27 @@ const client = new ApolloClient({
         fields: {
           balance: {
             read(_, { variables, storage }) {
+              console.log("read");
               if (!storage.var) {
+                console.log("storage.var about to be created");
                 storage.var = makeVar(5555);
-
-                console.log(variables.account);
-                if (variables.account) {
-                  provider.getBalance(variables.account).then((balance) => {
-                    const balanceInEth = ethers.utils.formatEther(balance);
-                    storage.var(balanceInEth);
-                  });
-                }
               }
+              if (variables.account) {
+                console.log(variables.account);
+                // 1. Load the page
+                // 2. Trigger the initial useQuery
+                // 3. The balance is 0 because the account is not connected yet
+                // 4. Ask the user to connect its wallet
+                // 5. When wallet is connected, the account var is updated
+                // 6. The useQuery is triggered again because the account is a dependency of the query
+                // 7. The balance is rendered properly for the connected account
+                provider.getBalance(variables.account).then((balance) => {
+                  const balanceInEth = ethers.utils.formatEther(balance);
+                  storage.var(balanceInEth);
+                  console.log(balanceInEth);
+                });
+              }
+              console.log(storage);
               return storage.var();
             },
           },
