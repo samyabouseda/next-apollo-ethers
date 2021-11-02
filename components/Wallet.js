@@ -1,9 +1,7 @@
 import React, { useEffect } from "react";
 import { useWeb3React } from "@web3-react/core";
 import { InjectedConnector } from "@web3-react/injected-connector";
-import useSWR from "swr";
-import { formatEther } from "@ethersproject/units";
-import { useQuery, gql, useLazyQuery } from "@apollo/client";
+import { gql, useLazyQuery } from "@apollo/client";
 
 export const injectedConnector = new InjectedConnector({
   supportedChainIds: [
@@ -21,6 +19,9 @@ const QUERY = gql`
   }
 `;
 
+// TODO: Refactor the wallet component to be a top level component
+// will be located in the Layout package (or core components)
+// Is it possible to connect the user at the root _app component and make the options available through provider/context pattern?
 export const Wallet = () => {
   const { chainId, account, activate, active } = useWeb3React();
   const [getBalance, { data, loading, error }] = useLazyQuery(QUERY);
@@ -47,9 +48,6 @@ export const Wallet = () => {
     console.log(error);
     return <div>error</div>;
   }
-
-  console.log(`account: ${account}`);
-  console.log(`activate: ${active}`);
 
   return (
     <div>

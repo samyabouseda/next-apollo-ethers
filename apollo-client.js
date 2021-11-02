@@ -2,13 +2,14 @@ import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { makeVar } from "@apollo/client";
 import { ethers } from "ethers";
 
+// TODO: Refactor this to have only on instance of the provider throuhought the app.
 const provider = ethers.getDefaultProvider("mainnet");
-// const provider = new ethers.providers.Web3Provider(window.ethereum);
 
+// This could be helpful to hide the account or make it globaly available.
 const connectedAccount = makeVar();
 
 const client = new ApolloClient({
-  uri: "https://countries.trevorblades.com",
+  // uri: "https://countries.trevorblades.com",
   cache: new InMemoryCache({
     typePolicies: {
       Query: {

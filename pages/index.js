@@ -26,7 +26,7 @@ export default function Home({ countries }) {
           </ClientOnly>
         </div>
 
-        <div className={styles.grid}>
+        {/* <div className={styles.grid}>
           {countries.map((country) => (
             <div key={country.code} className={styles.card}>
               <h3>
@@ -57,7 +57,7 @@ export default function Home({ countries }) {
               </p>
             </div>
           ))}
-        </div>
+        </div> */}
       </main>
 
       <footer className={styles.footer}>
@@ -76,22 +76,22 @@ export default function Home({ countries }) {
   );
 }
 
-export async function getStaticProps() {
-  const { data } = await client.query({
-    query: gql`
-      query Countries {
-        countries {
-          code
-          name
-          emoji
-        }
-      }
-    `,
-  });
+// export async function getStaticProps() {
+//   const { data } = await client.query({
+//     query: gql`
+//       query Countries {
+//         countries {
+//           code
+//           name
+//           emoji
+//         }
+//       }
+//     `,
+//   });
 
-  return {
-    props: {
-      countries: data.countries.slice(0, 4),
-    },
-  };
-}
+//   return {
+//     props: {
+//       countries: data.countries.slice(0, 4),
+//     },
+//   };
+// }
